@@ -9,9 +9,11 @@
         android:layout_height="60dp"
         android:padding="3dp">
         <SeekBar
+            android:id="@+id/radiusSlider"
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="8"
+            android:max="10"
             android:maxHeight="100dp" />
         <Button
             android:layout_width="0px"

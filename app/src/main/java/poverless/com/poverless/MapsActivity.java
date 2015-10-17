@@ -3,6 +3,7 @@ package poverless.com.poverless;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private PositionData positionData = new PositionData();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +22,8 @@ public class MapsActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressCircle);
-        new LocationTask(mMap, progressBar, getApplicationContext()).execute();
+        final SeekBar seekBar = (SeekBar) findViewById(R.id.radiusSlider);
+        new LocationTask(mMap, progressBar, getApplicationContext(), positionData).execute();
     }
 
     @Override

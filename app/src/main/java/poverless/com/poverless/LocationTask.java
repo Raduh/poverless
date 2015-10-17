@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -25,11 +26,14 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
     private Context context;
     private Float latitude;
     private Float longitude;
+    private PositionData positionData;
 
-    LocationTask(GoogleMap googleMap, ProgressBar progressBar, Context context) {
+    LocationTask(GoogleMap googleMap, ProgressBar progressBar, Context context,
+                 PositionData positionData) {
         this.googleMap = googleMap;
         this.progressBar = progressBar;
         this.context = context;
+        this.positionData = positionData;
     }
     @Override
     public void onPreExecute() {
@@ -81,7 +85,10 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
         if (latitude == null || longitude == null) {
             return;
         }
+
         final LatLng latLng = new LatLng(latitude, longitude);
+        positionData.center = latLng;
+
         CameraUpdate center = CameraUpdateFactory.newLatLng(latLng);
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(Const.MAP_ZOOM);
 
@@ -93,7 +100,13 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.youhere)));
-        googleMap.setBuildingsEnabled(true);
+
+        googleMap.addCircle(new CircleOptions()
+                .center(positionData.center)
+                .radius(positionData.radius)
+                .fillColor(Const.BLUE_SHADE)
+                .strokeColor(Const.BLUE_STROKE)
+                .strokeWidth(Const.STROKE_WIDTH));
 
     }
 
