@@ -2,6 +2,7 @@ package poverless.com.poverless;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -17,6 +18,9 @@ public class MapsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressCircle);
+        new LocationTask(mMap, progressBar, getApplicationContext()).execute();
     }
 
     @Override
