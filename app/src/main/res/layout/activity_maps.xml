@@ -11,18 +11,33 @@
         <SeekBar
             android:layout_width="0px"
             android:layout_height="match_parent"
-            android:layout_weight="8"/>
+            android:layout_weight="8"
+            android:maxHeight="100dp" />
         <Button
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:text="Pay"/>
+            android:text="Pay"
+            android:onClick="startPayment"/>
     </LinearLayout>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/map"
-    tools:context=".MapsActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map"
+            tools:context=".MapsActivity"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressCircle"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            style="@android:style/Widget.ProgressBar.Large"/>
+    </FrameLayout>
+
 </LinearLayout>
