@@ -1,9 +1,13 @@
 package poverless.com.poverless;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
@@ -20,10 +24,12 @@ public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private PositionData positionData = new PositionData();
+    private float mostRecentPaymentAmount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
@@ -97,11 +103,39 @@ public class MapsActivity extends FragmentActivity {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
-    public void startPayment(View view) {
+    public void askPayAmount(View view) {
+        final Dialog dialog = new Dialog(MapsActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.amount_dialog);
+        dialog.setCancelable(true);
+        dialog.show();
+
+        final EditText amount_txt = (EditText) dialog.findViewById(R.id.donationAmountTxt);
+        final Button confirmBtn = (Button) dialog.findViewById(R.id.confirmAmountBtn);
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String amountStr = amount_txt.getText().toString();
+                dialog.cancel();
+
+                float amount;
+                try {
+                    amount = Float.parseFloat(amountStr);
+                } catch (Exception ex) {
+                    return;  // TODO: announce user that input is invalid
+                }
+                startPayment(amount);
+            }
+        });
+
+    }
+
+    public void startPayment(float amount) {
+        mostRecentPaymentAmount = amount;
         Intent scanIntent = new Intent(this, CardIOActivity.class);
 
         // customize these values to suit your needs.
-        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true); // default: false
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, false); // default: false
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
         scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false); // default: false
 
@@ -114,6 +148,9 @@ public class MapsActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == MY_SCAN_REQUEST_CODE) {
+            final float payAmount = mostRecentPaymentAmount;
+            mostRecentPaymentAmount = -1;
+
             String resultDisplayStr;
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
