@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -89,7 +90,10 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
 
         googleMap.clear();
 
-        googleMap.addMarker(new MarkerOptions().position(latLng))
+        googleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.youhere)));
+        googleMap.setBuildingsEnabled(true);
 
     }
 
