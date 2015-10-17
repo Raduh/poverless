@@ -97,7 +97,4 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
 
         Util.showInterestArea(googleMap, positionData);
     }
-
-
-
 }

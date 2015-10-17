@@ -1,7 +1,9 @@
 package poverless.com.poverless;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
@@ -10,7 +12,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import io.card.payment.CardIOActivity;
+import io.card.payment.CreditCard;
+
 public class MapsActivity extends FragmentActivity {
+    public static final int MY_SCAN_REQUEST_CODE = 13;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private PositionData positionData = new PositionData();
@@ -60,7 +66,7 @@ public class MapsActivity extends FragmentActivity {
      * <p>
      * If it isn't installed {@link SupportMapFragment} (and
      * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
+     * install/update the Google Play services APK  their device.
      * <p>
      * A user can return to this FragmentActivity after following the prompt and correctly
      * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
@@ -89,5 +95,54 @@ public class MapsActivity extends FragmentActivity {
      */
     private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+    }
+
+    public void startPayment(View view) {
+        Intent scanIntent = new Intent(this, CardIOActivity.class);
+
+        // customize these values to suit your needs.
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true); // default: false
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, false); // default: false
+
+        // MY_SCAN_REQUEST_CODE is arbitrary and is only used within this activity.
+        startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MY_SCAN_REQUEST_CODE) {
+            String resultDisplayStr;
+            if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
+                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+
+                // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
+                resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
+
+                // Do something with the raw number, e.g.:
+                // myService.setCardNumber( scanResult.cardNumber );
+
+                if (scanResult.isExpiryValid()) {
+                    resultDisplayStr += "Expiration Date: " + scanResult.expiryMonth + "/" + scanResult.expiryYear + "\n";
+                }
+
+                if (scanResult.cvv != null) {
+                    // Never log or display a CVV
+                    resultDisplayStr += "CVV has " + scanResult.cvv.length() + " digits.\n";
+                }
+
+                if (scanResult.postalCode != null) {
+                    resultDisplayStr += "Postal Code: " + scanResult.postalCode + "\n";
+                }
+            }
+            else {
+                resultDisplayStr = "Scan was canceled.";
+            }
+            // do something with resultDisplayStr, maybe display it in a textView
+            // resultTextView.setText(resultStr);
+        }
+        // else handle other activity results
     }
 }
