@@ -25,4 +25,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.2.42'
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'io.card:android-sdk:5.1.1'
+    compile 'com.braintreepayments.api:braintree:1.5.1'
+    compile 'com.loopj.android:android-async-http:1.4.4'
 }

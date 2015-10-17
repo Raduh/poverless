@@ -11,17 +11,22 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
+import com.braintreepayments.api.models.CardBuilder;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 
 public class MapsActivity extends FragmentActivity {
     public static final int MY_SCAN_REQUEST_CODE = 13;
-
+    public static final String SERVER_BASE = "http://jupiter.eecs.jacobs-university.de";
+    public static final int SERVER_PORT = 1414;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private PositionData positionData = new PositionData();
     private float mostRecentPaymentAmount = -1;
@@ -143,6 +148,19 @@ public class MapsActivity extends FragmentActivity {
         startActivityForResult(scanIntent, MY_SCAN_REQUEST_CODE);
     }
 
+    public void startChargeTransaction(String cardNumber, float amount) {
+        CardBuilder cardBuilder = new CardBuilder().cardNumber(cardNumber);
+        // TODO: finalize payment details
+        AsyncHttpClient client = new AsyncHttpClient(SERVER_PORT, SERVER_PORT);
+        RequestParams params = new RequestParams();
+        params.add("amount", String.valueOf(amount));
+        params.add("latitude", String.valueOf(positionData.center.latitude));
+        params.add("longitude", String.valueOf(positionData.center.longitude));
+        params.add("radius", String.valueOf(positionData.radius));
+        params.add("type", "P");
+        client.get(SERVER_BASE, params, new TextHttpResponseHandler());
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -154,6 +172,7 @@ public class MapsActivity extends FragmentActivity {
             String resultDisplayStr;
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+                startChargeTransaction(scanResult.cardNumber, payAmount);
 
                 // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
                 resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
