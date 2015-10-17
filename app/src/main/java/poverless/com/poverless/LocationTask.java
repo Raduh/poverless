@@ -95,19 +95,7 @@ public class LocationTask extends AsyncTask<Void, Void, Void> {
         googleMap.moveCamera(center);
         googleMap.animateCamera(zoom);
 
-        googleMap.clear();
-
-        googleMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.youhere)));
-
-        googleMap.addCircle(new CircleOptions()
-                .center(positionData.center)
-                .radius(positionData.radius)
-                .fillColor(Const.BLUE_SHADE)
-                .strokeColor(Const.BLUE_STROKE)
-                .strokeWidth(Const.STROKE_WIDTH));
-
+        Util.showInterestArea(googleMap, positionData);
     }
 
 

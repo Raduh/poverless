@@ -23,6 +23,27 @@ public class MapsActivity extends FragmentActivity {
 
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressCircle);
         final SeekBar seekBar = (SeekBar) findViewById(R.id.radiusSlider);
+        seekBar.setProgress((int)(100 * Const.DEFAULT_RADIUS / Const.MAX_RADIUS));
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                final float newRadius = (i / 100.0f) * Const.MAX_RADIUS;
+                positionData.radius = newRadius;
+
+                Util.showInterestArea(mMap, positionData);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         new LocationTask(mMap, progressBar, getApplicationContext(), positionData).execute();
     }
 

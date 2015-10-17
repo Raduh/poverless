@@ -13,7 +13,7 @@
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="8"
-            android:max="10"
+            android:max="100"
             android:maxHeight="100dp" />
         <Button
             android:layout_width="0px"
