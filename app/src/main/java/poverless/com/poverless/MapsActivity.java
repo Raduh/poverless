@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.braintreepayments.api.models.CardBuilder;
 import com.google.android.gms.maps.GoogleMap;
@@ -159,6 +160,8 @@ public class MapsActivity extends FragmentActivity {
         params.add("radius", String.valueOf(positionData.radius));
         params.add("type", "P");
         client.get(SERVER_BASE, params, new TextHttpResponseHandler());
+
+        Toast.makeText(this, "Thank you!", Toast.LENGTH_LONG).show();
     }
 
     @Override
